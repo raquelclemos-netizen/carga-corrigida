@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carga de dados corrigida</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .dropzone.active { border-color: #2563eb; background-color: #eff6ff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-[#f8fafc] min-h-screen text-slate-900 flex flex-col">
+
+    <!-- Header Simples e Profissional -->
+    <header class="bg-slate-900 text-white shadow-xl p-5 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto flex justify-between items-center w-full">
+            <div class="flex items-center gap-4">
+                <div class="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-900/20">
+                    <i data-lucide="file-check-2" class="text-white w-7 h-7"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Carga de dados corrigida</h1>
+                    <p class="text-slate-400 text-[10px] uppercase font-bold tracking-[0.15em]">Otimizador de Ficheiros XML</p>
+                </div>
+            </div>
+            <div class="hidden sm:flex items-center gap-4">
+                <div class="flex flex-col items-end">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase">Estado do Sistema</span>
+                    <span class="flex items-center gap-1.5 text-emerald-400 text-xs font-medium">
+                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Online
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 w-full">
+        
+        <!-- Painel de Trabalho (Esquerda) -->
+        <div class="lg:col-span-8 space-y-8">
+            
+            <!-- Zona de Upload -->
+            <div id="dropzone" class="bg-white rounded-[2rem] shadow-sm border-2 border-dashed border-slate-200 p-12 text-center hover:border-blue-500 transition-all cursor-pointer relative group overflow-hidden">
+                <div class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-40 transition-opacity"></div>
+                <input type="file" id="fileInput" multiple accept=".xml" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                
+                <div class="bg-slate-50 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">
+                    <i data-lucide="cloud-upload" class="h-10 w-10 text-slate-400 group-hover:text-blue-600"></i>
+                </div>
+                <h3 class="text-2xl font-extrabold text-slate-800">Importar ficheiros</h3>
+                <p class="text-slate-500 text-sm mt-3 max-w-sm mx-auto leading-relaxed">
+                    Arraste os ficheiros XML originais para aqui ou clique para selecionar no seu dispositivo.
+                </p>
+            </div>
+
+            <!-- Fila de Processamento -->
+            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 flex flex-col min-h-[500px] overflow-hidden">
+                <div class="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-slate-900 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-md" id="fileCount">0</div>
+                        <h2 class="font-bold text-slate-800 text-lg">Ficheiros na fila</h2>
+                    </div>
+                    <div class="flex gap-4">
+                        <button id="clearBtn" class="hidden text-slate-400 hover:text-red-500 p-2.5 transition-colors" title="Limpar lista">
+                            <i data-lucide="trash-2" class="w-6 h-6"></i>
+                        </button>
+                        <button id="processBtn" class="hidden bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-200 active:scale-95">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i> CORRIGIR E VALIDAR
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="fileList" class="divide-y divide-slate-50 overflow-y-auto flex-1">
+                    <div class="h-full flex flex-col items-center justify-center text-slate-300 py-24">
+                        <div class="bg-slate-50 p-6 rounded-full mb-4">
+                            <i data-lucide="files" class="w-12 h-12 opacity-20"></i>
+                        </div>
+                        <p class="text-sm font-medium italic">Aguardando carregamento de documentos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Painel de Controlo (Direita) -->
+        <div class="lg:col-span-4 space-y-8">
+
+            <!-- Configuração de Datas -->
+            <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
+                    <i data-lucide="calendar-range" class="w-5 h-5 text-blue-600"></i> Parâmetros de Data
+                </h3>
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Vencimento Geral / Pagto</label>
+                        <input type="date" id="dataGeral" value="2026-05-29" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Vencimento Dedução</label>
+                        <input type="date" id="dataDeducao" value="2026-06-19" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Pagamento Dedução</label>
+                        <input type="date" id="dataDeducaoPagto" value="2026-06-19" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+                    </div>
+                    <p class="text-[10px] text-slate-400 italic mt-2">As datas acima serão aplicadas a todos os documentos processados.</p>
+                </div>
+            </div>
+            
+            <!-- Logs de Operação -->
+            <div class="bg-[#0f172a] rounded-[2rem] shadow-2xl p-8 text-white h-[300px] flex flex-col border border-slate-800">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Monitor de Atividade
+                    </h2>
+                    <i data-lucide="terminal" class="w-4 h-4 text-slate-600"></i>
+                </div>
+                <div id="logArea" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-3 pr-2 text-slate-300">
+                    <p class="text-slate-600 italic">Pronto para processamento.</p>
+                </div>
+            </div>
+
+            <!-- Resumo das Regras -->
+            <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
+                    <i data-lucide="settings-2" class="w-5 h-5 text-blue-600"></i> Regras Aplicadas
+                </h3>
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="bg-emerald-50 text-emerald-600 w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center">
+                            <i data-lucide="minus-circle" class="w-4 h-4"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-slate-700 uppercase tracking-wide">Limpeza</p>
+                            <p class="text-xs text-slate-500 leading-relaxed">Remoção automática de registos com valores negativos.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="bg-amber-50 text-amber-600 w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center">
+                            <i data-lucide="shield" class="w-4 h-4"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-slate-700 uppercase tracking-wide">Privacidade</p>
+                            <p class="text-xs text-slate-500 leading-relaxed">Os dados nunca saem do seu browser. Processamento local.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-100 p-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] text-slate-400 font-medium gap-4">
+            <p>Gerador de Ficheiros de Carga Corrigidos © 2026</p>
+            <div class="flex gap-8">
+                <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Processamento Instantâneo</span>
+                <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-500"></i> Formato SIAFI Compatível</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const fileCountLabel = document.getElementById('fileCount');
+        const processBtn = document.getElementById('processBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const logArea = document.getElementById('logArea');
+        const dropzone = document.getElementById('dropzone');
+
+        let queue = [];
+
+        function addLog(msg, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            let color = 'text-slate-400';
+            if(type === 'error') color = 'text-red-400';
+            if(type === 'success') color = 'text-blue-400';
+            
+            const div = document.createElement('div');
+            div.className = `border-l-2 pl-4 py-1 border-slate-800 ${color}`;
+            div.innerHTML = `<span class="text-slate-600 mr-2 text-[9px] font-sans tracking-widest">${time}</span> ${msg}`;
+            logArea.prepend(div);
+        }
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files).filter(f => f.name.toLowerCase().endsWith('.xml'));
+            if (files.length === 0) return;
+            files.forEach(f => {
+                const id = Math.random().toString(36).substr(2, 9);
+                queue.push({ id, file: f, status: 'pendente', result: null });
+            });
+            updateUI();
+            addLog(`${files.length} ficheiro(s) adicionado(s) à fila.`);
+        });
+
+        clearBtn.onclick = () => {
+            queue = [];
+            updateUI();
+            addLog("Fila limpa.", "info");
+        };
+
+        function updateUI() {
+            fileCountLabel.innerText = queue.length;
+            if (queue.length > 0) {
+                processBtn.classList.remove('hidden');
+                clearBtn.classList.remove('hidden');
+                fileList.innerHTML = '';
+                queue.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = "px-8 py-6 flex items-center justify-between hover:bg-slate-50/50 transition-all " + 
+                                   (item.status === 'concluído' ? 'bg-emerald-50/10' : '');
+                    div.innerHTML = `
+                        <div class="flex items-center gap-6">
+                            <div class="p-3.5 rounded-2xl ${item.status === 'concluído' ? 'bg-emerald-100 text-emerald-600 shadow-sm' : 'bg-slate-100 text-slate-400'}">
+                                <i data-lucide="${item.status === 'concluído' ? 'check-circle' : 'file-code'}" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-700 truncate max-w-[350px] text-sm">${item.file.name}</p>
+                                <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-[0.15em] mt-1.5">${(item.file.size/1024).toFixed(1)} KB • STATUS: ${item.status}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            ${item.status === 'concluído' ? 
+                                `<button onclick="downloadFile('${item.id}')" class="bg-blue-600 text-white p-3.5 rounded-2xl hover:shadow-xl hover:bg-blue-700 transition-all active:scale-90" title="Descarregar Ficheiro Corrigido"><i data-lucide="download" class="w-5 h-5"></i></button>` : 
+                                `<button onclick="removeFile('${item.id}')" class="p-3.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>`}
+                        </div>
+                    `;
+                    fileList.appendChild(div);
+                });
+                lucide.createIcons();
+            } else {
+                processBtn.classList.add('hidden');
+                clearBtn.classList.add('hidden');
+                fileList.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-slate-300 py-24">
+                        <div class="bg-slate-50 p-6 rounded-full mb-4">
+                            <i data-lucide="files" class="w-12 h-12 opacity-20"></i>
+                        </div>
+                        <p class="text-sm font-medium italic">Aguardando carregamento de documentos...</p>
+                    </div>`;
+                lucide.createIcons();
+            }
+        }
+
+        function removeFile(id) {
+            queue = queue.filter(q => q.id !== id);
+            updateUI();
+        }
+
+        async function processFile(item) {
+            // Obtém as datas configuradas na interface
+            const dataGeralVal = document.getElementById('dataGeral').value;
+            const dataDeducaoVal = document.getElementById('dataDeducao').value;
+            const dataDeducaoPagtoVal = document.getElementById('dataDeducaoPagto').value;
+
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+                        
+                        let removidos = 0;
+                        const detalhes = Array.from(xmlDoc.getElementsByTagName("sb:detalhe")).length > 0 ? 
+                                         Array.from(xmlDoc.getElementsByTagName("sb:detalhe")) : 
+                                         Array.from(xmlDoc.getElementsByTagName("detalhe"));
+                        
+                        const container = xmlDoc.getElementsByTagName("sb:detalhes")[0] || xmlDoc.getElementsByTagName("detalhes")[0];
+
+                        detalhes.forEach(detalhe => {
+                            const valores = Array.from(detalhe.getElementsByTagName("vlr"));
+                            if (valores.some(v => parseFloat(v.textContent) < 0)) {
+                                if (container) container.removeChild(detalhe);
+                                removidos++;
+                                return;
+                            }
+
+                            const dados = detalhe.getElementsByTagName("dadosBasicos")[0];
+                            if (dados) {
+                                ["dtVenc", "dtPgtoReceb"].forEach(t => {
+                                    const el = dados.getElementsByTagName(t)[0];
+                                    if (el) el.textContent = dataGeralVal;
+                                });
+                                const ug = dados.getElementsByTagName("codUgPgto")[0];
+                                if (ug) ug.textContent = "155913";
+                            }
+
+                            const deducoes = Array.from(detalhe.getElementsByTagName("deducao"));
+                            deducoes.forEach(ded => {
+                                const map = {
+                                    "codSit": "DDF055", 
+                                    "dtVenc": dataDeducaoVal, 
+                                    "dtPgtoReceb": dataDeducaoPagtoVal, 
+                                    "codUgPgto": "155913"
+                                };
+                                Object.entries(map).forEach(([t, v]) => {
+                                    const el = ded.getElementsByTagName(t)[0];
+                                    if (el) el.textContent = v;
+                                });
+                                Array.from(ded.getElementsByTagName("predoc")).forEach(p => ded.removeChild(p));
+                            });
+                        });
+
+                        const trailler = xmlDoc.getElementsByTagName("sb:trailler")[0] || xmlDoc.getElementsByTagName("trailler")[0];
+                        if (trailler) {
+                            const qtd = trailler.getElementsByTagName("sb:quantidadeDetalhe")[0] || trailler.getElementsByTagName("quantidadeDetalhe")[0];
+                            if (qtd && container) qtd.textContent = container.children.length.toString();
+                        }
+
+                        const serializer = new XMLSerializer();
+                        resolve({ success: true, content: serializer.serializeToString(xmlDoc), removidos });
+                    } catch (err) {
+                        resolve({ success: false, error: err.message });
+                    }
+                };
+                reader.readAsText(item.file, "ISO-8859-1");
+            });
+        }
+
+        processBtn.addEventListener('click', async () => {
+            processBtn.disabled = true;
+            processBtn.innerText = "A PROCESSAR...";
+            addLog("Iniciando otimização em lote...");
+
+            for (let item of queue) {
+                if (item.status === 'concluído') continue;
+                const res = await processFile(item);
+                if (res.success) {
+                    item.status = 'concluído';
+                    item.result = res;
+                    addLog(`✔ ${item.file.name}: ${res.removidos} entradas negativas removidas.`, 'success');
+                } else {
+                    item.status = 'erro';
+                    addLog(`❌ ${item.file.name}: Erro ao interpretar XML.`, 'error');
+                }
+            }
+            
+            updateUI();
+            processBtn.disabled = false;
+            processBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> CORRIGIR E VALIDAR';
+            addLog("Processamento concluído. Ficheiros prontos.");
+        });
+
+        window.downloadFile = (id) => {
+            const item = queue.find(q => q.id === id);
+            if (!item || !item.result) return;
+            const blob = new Blob([item.result.content], { type: 'text/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = item.file.name.replace(".xml", "_corrigida.xml");
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.add('active'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.remove('active'), false);
+        });
+    </script>
+</body>
+</html>
