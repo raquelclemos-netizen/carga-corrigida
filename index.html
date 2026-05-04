@@ -18,7 +18,7 @@
 </head>
 <body class="bg-[#f8fafc] min-h-screen text-slate-900 flex flex-col">
 
-    <!-- Header Simples e Profissional -->
+    <!-- Header -->
     <header class="bg-slate-900 text-white shadow-xl p-5 border-b border-slate-800">
         <div class="max-w-7xl mx-auto flex justify-between items-center w-full">
             <div class="flex items-center gap-4">
@@ -109,11 +109,10 @@
                         <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Pagamento Dedução</label>
                         <input type="date" id="dataDeducaoPagto" value="2026-06-19" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
                     </div>
-                    <p class="text-[10px] text-slate-400 italic mt-2">As datas acima serão aplicadas a todos os documentos processados.</p>
                 </div>
             </div>
             
-            <!-- Logs de Operação -->
+            <!-- Logs -->
             <div class="bg-[#0f172a] rounded-[2rem] shadow-2xl p-8 text-white h-[300px] flex flex-col border border-slate-800">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
@@ -126,44 +125,25 @@
                 </div>
             </div>
 
-            <!-- Resumo das Regras -->
+            <!-- Resumo -->
             <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
-                    <i data-lucide="settings-2" class="w-5 h-5 text-blue-600"></i> Regras Aplicadas
+                    <i data-lucide="settings-2" class="w-5 h-5 text-blue-600"></i> Automatizações
                 </h3>
-                <div class="space-y-6">
-                    <div class="flex gap-4">
-                        <div class="bg-emerald-50 text-emerald-600 w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center">
-                            <i data-lucide="minus-circle" class="w-4 h-4"></i>
-                        </div>
-                        <div class="space-y-1">
-                            <p class="text-xs font-bold text-slate-700 uppercase tracking-wide">Limpeza</p>
-                            <p class="text-xs text-slate-500 leading-relaxed">Remoção automática de registos com valores negativos.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="bg-amber-50 text-amber-600 w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center">
-                            <i data-lucide="shield" class="w-4 h-4"></i>
-                        </div>
-                        <div class="space-y-1">
-                            <p class="text-xs font-bold text-slate-700 uppercase tracking-wide">Privacidade</p>
-                            <p class="text-xs text-slate-500 leading-relaxed">Os dados nunca saem do seu browser. Processamento local.</p>
-                        </div>
-                    </div>
+                <div class="space-y-4">
+                    <p class="text-xs text-slate-500 flex items-center gap-2">
+                        <i data-lucide="check" class="w-3 h-3 text-emerald-500"></i> Datas ajustadas conforme parâmetros
+                    </p>
+                    <p class="text-xs text-slate-500 flex items-center gap-2">
+                        <i data-lucide="check" class="w-3 h-3 text-emerald-500"></i> Itens negativos removidos
+                    </p>
+                    <p class="text-xs text-slate-500 flex items-center gap-2 font-semibold">
+                        <i data-lucide="plus" class="w-3 h-3 text-blue-500"></i> CNPJ anexado na observação
+                    </p>
                 </div>
             </div>
         </div>
     </main>
-
-    <footer class="bg-white border-t border-slate-100 p-8">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[11px] text-slate-400 font-medium gap-4">
-            <p>Gerador de Ficheiros de Carga Corrigidos © 2026</p>
-            <div class="flex gap-8">
-                <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Processamento Instantâneo</span>
-                <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-500"></i> Formato SIAFI Compatível</span>
-            </div>
-        </div>
-    </footer>
 
     <script>
         lucide.createIcons();
@@ -174,7 +154,6 @@
         const processBtn = document.getElementById('processBtn');
         const clearBtn = document.getElementById('clearBtn');
         const logArea = document.getElementById('logArea');
-        const dropzone = document.getElementById('dropzone');
 
         let queue = [];
 
@@ -198,13 +177,12 @@
                 queue.push({ id, file: f, status: 'pendente', result: null });
             });
             updateUI();
-            addLog(`${files.length} ficheiro(s) adicionado(s) à fila.`);
+            addLog(`${files.length} ficheiro(s) carregado(s).`);
         });
 
         clearBtn.onclick = () => {
             queue = [];
             updateUI();
-            addLog("Fila limpa.", "info");
         };
 
         function updateUI() {
@@ -224,13 +202,13 @@
                             </div>
                             <div>
                                 <p class="font-bold text-slate-700 truncate max-w-[350px] text-sm">${item.file.name}</p>
-                                <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-[0.15em] mt-1.5">${(item.file.size/1024).toFixed(1)} KB • STATUS: ${item.status}</p>
+                                <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-[0.15em] mt-1.5">${item.status}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
                             ${item.status === 'concluído' ? 
-                                `<button onclick="downloadFile('${item.id}')" class="bg-blue-600 text-white p-3.5 rounded-2xl hover:shadow-xl hover:bg-blue-700 transition-all active:scale-90" title="Descarregar Ficheiro Corrigido"><i data-lucide="download" class="w-5 h-5"></i></button>` : 
-                                `<button onclick="removeFile('${item.id}')" class="p-3.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>`}
+                                `<button onclick="downloadFile('${item.id}')" class="bg-blue-600 text-white p-3.5 rounded-2xl hover:bg-blue-700 transition-all" title="Descarregar"><i data-lucide="download" class="w-5 h-5"></i></button>` : 
+                                `<button onclick="removeFile('${item.id}')" class="p-3.5 text-slate-300 hover:text-red-500 rounded-2xl transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>`}
                         </div>
                     `;
                     fileList.appendChild(div);
@@ -239,13 +217,7 @@
             } else {
                 processBtn.classList.add('hidden');
                 clearBtn.classList.add('hidden');
-                fileList.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-slate-300 py-24">
-                        <div class="bg-slate-50 p-6 rounded-full mb-4">
-                            <i data-lucide="files" class="w-12 h-12 opacity-20"></i>
-                        </div>
-                        <p class="text-sm font-medium italic">Aguardando carregamento de documentos...</p>
-                    </div>`;
+                fileList.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-slate-300 py-24"><i data-lucide="files" class="w-12 h-12 opacity-20 mb-4"></i><p class="text-sm italic">Aguardando documentos...</p></div>`;
                 lucide.createIcons();
             }
         }
@@ -256,7 +228,6 @@
         }
 
         async function processFile(item) {
-            // Obtém as datas configuradas na interface
             const dataGeralVal = document.getElementById('dataGeral').value;
             const dataDeducaoVal = document.getElementById('dataDeducao').value;
             const dataDeducaoPagtoVal = document.getElementById('dataDeducaoPagto').value;
@@ -285,6 +256,19 @@
 
                             const dados = detalhe.getElementsByTagName("dadosBasicos")[0];
                             if (dados) {
+                                // 1. Anexar CNPJ na Observação
+                                const obsEl = dados.getElementsByTagName("txtObser")[0];
+                                const credorEl = dados.getElementsByTagName("codCredorDevedor")[0];
+                                if (obsEl && credorEl) {
+                                    const cnpj = credorEl.textContent.trim();
+                                    const obsOriginal = obsEl.textContent.trim();
+                                    // Adiciona apenas se o CNPJ ainda não estiver no texto
+                                    if (!obsOriginal.includes(cnpj)) {
+                                        obsEl.textContent = `${obsOriginal} | Fornecedor: ${cnpj}`;
+                                    }
+                                }
+
+                                // 2. Datas Gerais
                                 ["dtVenc", "dtPgtoReceb"].forEach(t => {
                                     const el = dados.getElementsByTagName(t)[0];
                                     if (el) el.textContent = dataGeralVal;
@@ -293,6 +277,7 @@
                                 if (ug) ug.textContent = "155913";
                             }
 
+                            // 3. Deduções
                             const deducoes = Array.from(detalhe.getElementsByTagName("deducao"));
                             deducoes.forEach(ded => {
                                 const map = {
@@ -328,7 +313,7 @@
         processBtn.addEventListener('click', async () => {
             processBtn.disabled = true;
             processBtn.innerText = "A PROCESSAR...";
-            addLog("Iniciando otimização em lote...");
+            addLog("Iniciando processamento...");
 
             for (let item of queue) {
                 if (item.status === 'concluído') continue;
@@ -336,17 +321,16 @@
                 if (res.success) {
                     item.status = 'concluído';
                     item.result = res;
-                    addLog(`✔ ${item.file.name}: ${res.removidos} entradas negativas removidas.`, 'success');
+                    addLog(`✔ ${item.file.name}: ${res.removidos} removidos + CNPJ anexado.`, 'success');
                 } else {
                     item.status = 'erro';
-                    addLog(`❌ ${item.file.name}: Erro ao interpretar XML.`, 'error');
+                    addLog(`❌ ${item.file.name}: Erro no XML.`, 'error');
                 }
             }
             
             updateUI();
             processBtn.disabled = false;
             processBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> CORRIGIR E VALIDAR';
-            addLog("Processamento concluído. Ficheiros prontos.");
         });
 
         window.downloadFile = (id) => {
@@ -360,13 +344,6 @@
             a.click();
             URL.revokeObjectURL(url);
         };
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => dropzone.classList.add('active'), false);
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => dropzone.classList.remove('active'), false);
-        });
     </script>
 </body>
 </html>
