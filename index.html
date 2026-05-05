@@ -14,11 +14,13 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .modal { display: none; }
+        .modal.open { display: flex; }
     </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen text-slate-900 flex flex-col">
 
-    <!-- Header -->
+    <!-- Header Principal -->
     <header class="bg-slate-900 text-white shadow-xl p-5 border-b border-slate-800">
         <div class="max-w-7xl mx-auto flex justify-between items-center w-full">
             <div class="flex items-center gap-4">
@@ -30,11 +32,14 @@
                     <p class="text-slate-400 text-[10px] uppercase font-bold tracking-[0.15em]">Otimizador de Ficheiros XML</p>
                 </div>
             </div>
-            <div class="hidden sm:flex items-center gap-4">
-                <div class="flex flex-col items-end">
-                    <span class="text-[10px] text-slate-500 font-bold uppercase">Estado do Sistema</span>
-                    <span class="flex items-center gap-1.5 text-emerald-400 text-xs font-medium">
-                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Online
+            <div class="flex items-center gap-3">
+                <button onclick="toggleModal('tutorialModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 border border-slate-700 transition-all">
+                    <i data-lucide="help-circle" class="w-4 h-4 text-blue-400"></i> TUTORIAL SARF
+                </button>
+                <div class="hidden sm:flex flex-col items-end border-l border-slate-700 pl-4 ml-2">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Estado</span>
+                    <span class="flex items-center gap-1.5 text-emerald-400 text-[10px] font-bold">
+                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> ONLINE
                     </span>
                 </div>
             </div>
@@ -43,10 +48,10 @@
 
     <main class="max-w-7xl mx-auto p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 w-full">
         
-        <!-- Painel de Trabalho (Esquerda) -->
+        <!-- Área de Processamento (Esquerda) -->
         <div class="lg:col-span-8 space-y-8">
             
-            <!-- Zona de Upload -->
+            <!-- Zona de Drop/Upload -->
             <div id="dropzone" class="bg-white rounded-[2rem] shadow-sm border-2 border-dashed border-slate-200 p-12 text-center hover:border-blue-500 transition-all cursor-pointer relative group overflow-hidden">
                 <div class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-40 transition-opacity"></div>
                 <input type="file" id="fileInput" multiple accept=".xml" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
@@ -54,13 +59,13 @@
                 <div class="bg-slate-50 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">
                     <i data-lucide="cloud-upload" class="h-10 w-10 text-slate-400 group-hover:text-blue-600"></i>
                 </div>
-                <h3 class="text-2xl font-extrabold text-slate-800">Importar ficheiros</h3>
+                <h3 class="text-2xl font-extrabold text-slate-800">Importar ficheiros XML</h3>
                 <p class="text-slate-500 text-sm mt-3 max-w-sm mx-auto leading-relaxed">
-                    Arraste os ficheiros XML originais para aqui ou clique para selecionar no seu dispositivo.
+                    Arraste os ficheiros exportados do <strong>SARF</strong> para aqui ou clique para selecionar.
                 </p>
             </div>
 
-            <!-- Fila de Processamento -->
+            <!-- Fila de Ficheiros -->
             <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 flex flex-col min-h-[500px] overflow-hidden">
                 <div class="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
                     <div class="flex items-center gap-3">
@@ -69,20 +74,18 @@
                     </div>
                     <div class="flex gap-4">
                         <button id="clearBtn" class="hidden text-slate-400 hover:text-red-500 p-2.5 transition-colors" title="Limpar lista">
-                            <i data-lucide="trash-2" class="w-6 h-6"></i>
+                            <i data-lucide="eraser" class="w-6 h-6"></i>
                         </button>
-                        <button id="processBtn" class="hidden bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-200 active:scale-95">
-                            <i data-lucide="sparkles" class="w-4 h-4"></i> CORRIGIR E VALIDAR
+                        <button id="processBtn" class="hidden bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-200 active:translate-y-0.5">
+                            <i data-lucide="zap" class="w-4 h-4"></i> PROCESSAR E VALIDAR
                         </button>
                     </div>
                 </div>
                 
                 <div id="fileList" class="divide-y divide-slate-50 overflow-y-auto flex-1">
                     <div class="h-full flex flex-col items-center justify-center text-slate-300 py-24">
-                        <div class="bg-slate-50 p-6 rounded-full mb-4">
-                            <i data-lucide="files" class="w-12 h-12 opacity-20"></i>
-                        </div>
-                        <p class="text-sm font-medium italic">Aguardando carregamento de documentos...</p>
+                        <i data-lucide="file-spreadsheet" class="w-16 h-16 mb-4 opacity-20"></i>
+                        <p class="text-sm italic font-medium">Aguardando importação de ficheiros...</p>
                     </div>
                 </div>
             </div>
@@ -91,10 +94,23 @@
         <!-- Painel de Controlo (Direita) -->
         <div class="lg:col-span-4 space-y-8">
 
-            <!-- Configuração de Datas -->
+            <!-- Relatório de Omissões (Dinâmico) -->
+            <div id="reportContainer" class="hidden bg-amber-50 rounded-[2rem] p-8 border border-amber-200 shadow-lg shadow-amber-900/5 animate-bounce-short">
+                <h3 class="font-bold text-amber-800 flex items-center gap-2 mb-4">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i> Relatório de Omissões
+                </h3>
+                <p class="text-xs text-amber-700 mb-6 leading-relaxed">
+                    Existem itens com valores negativos que foram removidos. Clique abaixo para baixar o relatório detalhado.
+                </p>
+                <button id="downloadReportBtn" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all">
+                    <i data-lucide="download" class="w-4 h-4"></i> DESCARREGAR RELATÓRIO (.TXT)
+                </button>
+            </div>
+
+            <!-- Parâmetros de Data -->
             <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
-                    <i data-lucide="calendar-range" class="w-5 h-5 text-blue-600"></i> Parâmetros de Data
+                    <i data-lucide="calendar-days" class="w-5 h-5 text-blue-600"></i> Parâmetros de Data
                 </h3>
                 <div class="space-y-5">
                     <div>
@@ -112,38 +128,82 @@
                 </div>
             </div>
             
-            <!-- Logs -->
+            <!-- Consola de Atividade -->
             <div class="bg-[#0f172a] rounded-[2rem] shadow-2xl p-8 text-white h-[300px] flex flex-col border border-slate-800">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Monitor de Atividade
-                    </h2>
-                    <i data-lucide="terminal" class="w-4 h-4 text-slate-600"></i>
-                </div>
-                <div id="logArea" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-3 pr-2 text-slate-300">
+                <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-6 flex items-center justify-between">
+                    <span>Monitor de Operação</span>
+                    <i data-lucide="terminal" class="w-4 h-4"></i>
+                </h2>
+                <div id="logArea" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-3 pr-2 text-emerald-400">
                     <p class="text-slate-600 italic">Pronto para processamento.</p>
-                </div>
-            </div>
-
-            <!-- Resumo -->
-            <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
-                    <i data-lucide="settings-2" class="w-5 h-5 text-blue-600"></i> Automatizações
-                </h3>
-                <div class="space-y-4">
-                    <p class="text-xs text-slate-500 flex items-center gap-2">
-                        <i data-lucide="check" class="w-3 h-3 text-emerald-500"></i> Datas ajustadas conforme parâmetros
-                    </p>
-                    <p class="text-xs text-slate-500 flex items-center gap-2">
-                        <i data-lucide="check" class="w-3 h-3 text-emerald-500"></i> Itens negativos removidos
-                    </p>
-                    <p class="text-xs text-slate-500 flex items-center gap-2 font-semibold">
-                        <i data-lucide="plus" class="w-3 h-3 text-blue-500"></i> CNPJ anexado na observação
-                    </p>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Modal Tutorial -->
+    <div id="tutorialModal" class="modal fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 items-center justify-center p-6">
+        <div class="bg-white rounded-[2.5rem] max-w-3xl w-full shadow-2xl overflow-hidden relative max-h-[90vh] flex flex-col">
+            <div class="bg-blue-600 p-8 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="bg-white/20 p-3 rounded-2xl text-white">
+                        <i data-lucide="book-open" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold italic">Tutorial SARF</h2>
+                        <p class="text-blue-100 text-[10px] uppercase tracking-[0.2em] font-bold mt-1">Como gerar o ficheiro XML de carga</p>
+                    </div>
+                </div>
+                <button onclick="toggleModal('tutorialModal')" class="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div class="p-8 space-y-6 overflow-y-auto flex-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">1</span>
+                            <h4 class="font-bold text-slate-800 text-sm">Aceder ao Menu</h4>
+                        </div>
+                        <p class="text-slate-500 text-xs leading-relaxed">No SARF, aceda a:<br><strong>Finanças > Ordens Bancárias > Solicitações de Pagamento</strong></p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">2</span>
+                            <h4 class="font-bold text-slate-800 text-sm">Informar Data</h4>
+                        </div>
+                        <p class="text-slate-500 text-xs leading-relaxed">Digite a data da solicitação de pagamento no campo correspondente.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">3</span>
+                            <h4 class="font-bold text-slate-800 text-sm">Filtro Sequencial</h4>
+                        </div>
+                        <p class="text-slate-500 text-xs leading-relaxed">Digite os <strong>4 últimos números</strong> do sequencial que aparece na primeira linha.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">4</span>
+                            <h4 class="font-bold text-slate-800 text-sm">Seleção e XML</h4>
+                        </div>
+                        <p class="text-slate-500 text-xs leading-relaxed">Selecione as linhas desejadas e clique no botão <strong>XML/SIAFI</strong>.</p>
+                    </div>
+                </div>
+                <button onclick="toggleModal('tutorialModal')" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-lg text-sm uppercase tracking-widest">Entendido, ir para a carga</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-100 p-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest gap-4 text-center md:text-left">
+            <p>© 2026 Carga de dados corrigida | Processamento Local Seguro</p>
+            <div class="flex gap-6">
+                <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Otimização Instantânea</span>
+                <span class="flex items-center gap-1.5"><i data-lucide="file-check" class="w-3.5 h-3.5 text-blue-500"></i> Layout DH001</span>
+            </div>
+        </div>
+    </footer>
 
     <script>
         lucide.createIcons();
@@ -154,14 +214,22 @@
         const processBtn = document.getElementById('processBtn');
         const clearBtn = document.getElementById('clearBtn');
         const logArea = document.getElementById('logArea');
+        const dropzone = document.getElementById('dropzone');
+        const reportContainer = document.getElementById('reportContainer');
+        const downloadReportBtn = document.getElementById('downloadReportBtn');
 
         let queue = [];
+        let globalRemovalLogs = [];
+
+        function toggleModal(id) {
+            document.getElementById(id).classList.toggle('open');
+        }
 
         function addLog(msg, type = 'info') {
             const time = new Date().toLocaleTimeString();
             let color = 'text-slate-400';
             if(type === 'error') color = 'text-red-400';
-            if(type === 'success') color = 'text-blue-400';
+            if(type === 'success') color = 'text-emerald-400';
             
             const div = document.createElement('div');
             div.className = `border-l-2 pl-4 py-1 border-slate-800 ${color}`;
@@ -182,7 +250,10 @@
 
         clearBtn.onclick = () => {
             queue = [];
+            globalRemovalLogs = [];
+            reportContainer.classList.add('hidden');
             updateUI();
+            addLog("Fila limpa.");
         };
 
         function updateUI() {
@@ -201,14 +272,14 @@
                                 <i data-lucide="${item.status === 'concluído' ? 'check-circle' : 'file-code'}" class="w-6 h-6"></i>
                             </div>
                             <div>
-                                <p class="font-bold text-slate-700 truncate max-w-[350px] text-sm">${item.file.name}</p>
-                                <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-[0.15em] mt-1.5">${item.status}</p>
+                                <p class="font-bold text-slate-700 truncate max-w-[300px] text-sm">${item.file.name}</p>
+                                <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mt-1">${item.status}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
                             ${item.status === 'concluído' ? 
-                                `<button onclick="downloadFile('${item.id}')" class="bg-blue-600 text-white p-3.5 rounded-2xl hover:bg-blue-700 transition-all" title="Descarregar"><i data-lucide="download" class="w-5 h-5"></i></button>` : 
-                                `<button onclick="removeFile('${item.id}')" class="p-3.5 text-slate-300 hover:text-red-500 rounded-2xl transition-all"><i data-lucide="x" class="w-5 h-5"></i></button>`}
+                                `<button onclick="downloadFile('${item.id}')" class="bg-blue-600 text-white p-3.5 rounded-2xl hover:bg-blue-700 transition-all active:scale-90" title="Descarregar XML"><i data-lucide="download" class="w-5 h-5"></i></button>` : 
+                                `<button onclick="removeFile('${item.id}')" class="p-3.5 text-slate-300 hover:text-red-500 rounded-2xl transition-all"><i data-lucide="trash-2" class="w-5 h-5"></i></button>`}
                         </div>
                     `;
                     fileList.appendChild(div);
@@ -217,7 +288,7 @@
             } else {
                 processBtn.classList.add('hidden');
                 clearBtn.classList.add('hidden');
-                fileList.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-slate-300 py-24"><i data-lucide="files" class="w-12 h-12 opacity-20 mb-4"></i><p class="text-sm italic">Aguardando documentos...</p></div>`;
+                fileList.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-slate-300 py-24"><i data-lucide="file-spreadsheet" class="w-16 h-16 mb-4 opacity-20"></i><p class="text-sm italic font-medium">Aguardando documentos do SARF...</p></div>`;
                 lucide.createIcons();
             }
         }
@@ -239,7 +310,7 @@
                         const parser = new DOMParser();
                         const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
                         
-                        let removidos = 0;
+                        let removidosNoFicheiro = 0;
                         const detalhes = Array.from(xmlDoc.getElementsByTagName("sb:detalhe")).length > 0 ? 
                                          Array.from(xmlDoc.getElementsByTagName("sb:detalhe")) : 
                                          Array.from(xmlDoc.getElementsByTagName("detalhe"));
@@ -248,21 +319,38 @@
 
                         detalhes.forEach(detalhe => {
                             const valores = Array.from(detalhe.getElementsByTagName("vlr"));
-                            if (valores.some(v => parseFloat(v.textContent) < 0)) {
+                            const temNegativo = valores.some(v => parseFloat(v.textContent) < 0);
+
+                            if (temNegativo) {
+                                // Capturar dados para o relatório de omissões
+                                const dadosBasicos = detalhe.getElementsByTagName("dadosBasicos")[0];
+                                const dh = detalhe.getElementsByTagName("doc:CprDhCadastrar")[0] || detalhe.getElementsByTagName("CprDhCadastrar")[0];
+                                
+                                let obs = "Sem observação";
+                                let valorNeg = "N/D";
+
+                                if (dadosBasicos) {
+                                    const obsEl = dadosBasicos.getElementsByTagName("txtObser")[0];
+                                    if (obsEl) obs = obsEl.textContent.trim();
+                                    const vlrEl = dadosBasicos.getElementsByTagName("vlr")[0];
+                                    if (vlrEl) valorNeg = vlrEl.textContent.trim();
+                                }
+
+                                globalRemovalLogs.push(`Ficheiro: ${item.file.name} | Obs: ${obs} | Valor Removido: ${valorNeg}`);
+                                
                                 if (container) container.removeChild(detalhe);
-                                removidos++;
+                                removidosNoFicheiro++;
                                 return;
                             }
 
                             const dados = detalhe.getElementsByTagName("dadosBasicos")[0];
                             if (dados) {
-                                // 1. Anexar CNPJ na Observação
+                                // 1. CNPJ na Observação
                                 const obsEl = dados.getElementsByTagName("txtObser")[0];
                                 const credorEl = dados.getElementsByTagName("codCredorDevedor")[0];
                                 if (obsEl && credorEl) {
                                     const cnpj = credorEl.textContent.trim();
                                     const obsOriginal = obsEl.textContent.trim();
-                                    // Adiciona apenas se o CNPJ ainda não estiver no texto
                                     if (!obsOriginal.includes(cnpj)) {
                                         obsEl.textContent = `${obsOriginal} | Fornecedor: ${cnpj}`;
                                     }
@@ -273,6 +361,7 @@
                                     const el = dados.getElementsByTagName(t)[0];
                                     if (el) el.textContent = dataGeralVal;
                                 });
+                                // UG fixa conforme pedido original
                                 const ug = dados.getElementsByTagName("codUgPgto")[0];
                                 if (ug) ug.textContent = "155913";
                             }
@@ -294,6 +383,7 @@
                             });
                         });
 
+                        // 4. Atualizar Trailler (quantidade de detalhes)
                         const trailler = xmlDoc.getElementsByTagName("sb:trailler")[0] || xmlDoc.getElementsByTagName("trailler")[0];
                         if (trailler) {
                             const qtd = trailler.getElementsByTagName("sb:quantidadeDetalhe")[0] || trailler.getElementsByTagName("quantidadeDetalhe")[0];
@@ -301,7 +391,7 @@
                         }
 
                         const serializer = new XMLSerializer();
-                        resolve({ success: true, content: serializer.serializeToString(xmlDoc), removidos });
+                        resolve({ success: true, content: serializer.serializeToString(xmlDoc), removidos: removidosNoFicheiro });
                     } catch (err) {
                         resolve({ success: false, error: err.message });
                     }
@@ -313,7 +403,9 @@
         processBtn.addEventListener('click', async () => {
             processBtn.disabled = true;
             processBtn.innerText = "A PROCESSAR...";
-            addLog("Iniciando processamento...");
+            globalRemovalLogs = []; // Limpar logs anteriores
+            reportContainer.classList.add('hidden');
+            addLog("Iniciando otimização em lote...");
 
             for (let item of queue) {
                 if (item.status === 'concluído') continue;
@@ -321,17 +413,37 @@
                 if (res.success) {
                     item.status = 'concluído';
                     item.result = res;
-                    addLog(`✔ ${item.file.name}: ${res.removidos} removidos + CNPJ anexado.`, 'success');
+                    addLog(`✔ ${item.file.name}: ${res.removidos} removidos + CNPJ incluído.`, 'success');
                 } else {
                     item.status = 'erro';
-                    addLog(`❌ ${item.file.name}: Erro no XML.`, 'error');
+                    addLog(`❌ ${item.file.name}: Falha na leitura.`, 'error');
                 }
             }
             
             updateUI();
             processBtn.disabled = false;
             processBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> CORRIGIR E VALIDAR';
+            addLog("Processamento concluído.");
+
+            // Mostrar botão de relatório se houver omissões
+            if (globalRemovalLogs.length > 0) {
+                reportContainer.classList.remove('hidden');
+                lucide.createIcons();
+            }
         });
+
+        downloadReportBtn.onclick = () => {
+            if (globalRemovalLogs.length === 0) return;
+            const header = `RELATÓRIO DE OMISSÕES - CARGA SIAFI\nData: ${new Date().toLocaleString()}\n${'-'.repeat(50)}\n\n`;
+            const content = header + globalRemovalLogs.join('\n');
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `log_removidos_${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
 
         window.downloadFile = (id) => {
             const item = queue.find(q => q.id === id);
@@ -344,6 +456,13 @@
             a.click();
             URL.revokeObjectURL(url);
         };
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.add('active'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.remove('active'), false);
+        });
     </script>
 </body>
 </html>
