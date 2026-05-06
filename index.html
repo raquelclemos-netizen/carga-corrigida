@@ -10,459 +10,223 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .dropzone.active { border-color: #2563eb; background-color: #eff6ff; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .modal { display: none; }
         .modal.open { display: flex; }
+        .highlight-seq { color: #ef4444; font-weight: 800; }
     </style>
 </head>
-<body class="bg-[#f8fafc] min-h-screen text-slate-900 flex flex-col">
+<body class="bg-[#f8fafc] min-h-screen flex flex-col text-slate-900">
 
-    <!-- Header Principal -->
-    <header class="bg-slate-900 text-white shadow-xl p-5 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto flex justify-between items-center w-full">
+    <header class="bg-slate-900 text-white p-5 shadow-xl">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <div class="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-900/20">
-                    <i data-lucide="file-check-2" class="text-white w-7 h-7"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight">Carga de dados corrigida</h1>
-                    <p class="text-slate-400 text-[10px] uppercase font-bold tracking-[0.15em]">Otimizador de Ficheiros XML</p>
-                </div>
+                <div class="bg-blue-600 p-2 rounded-lg shadow-lg shadow-blue-500/20"><i data-lucide="file-check-2"></i></div>
+                <h1 class="text-xl font-bold italic tracking-tight uppercase">Carga de dados corrigida</h1>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="toggleModal('tutorialModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 border border-slate-700 transition-all">
-                    <i data-lucide="help-circle" class="w-4 h-4 text-blue-400"></i> TUTORIAL SARF
-                </button>
-                <div class="hidden sm:flex flex-col items-end border-l border-slate-700 pl-4 ml-2">
-                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Estado</span>
-                    <span class="flex items-center gap-1.5 text-emerald-400 text-[10px] font-bold">
-                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> ONLINE
-                    </span>
-                </div>
-            </div>
+            <button onclick="toggleModal('tutorialModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 border border-slate-700 transition-all">
+                <i data-lucide="help-circle" class="w-4 h-4 text-blue-400"></i> TUTORIAL SARF
+            </button>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 w-full">
-        
-        <!-- Área de Processamento (Esquerda) -->
         <div class="lg:col-span-8 space-y-8">
-            
-            <!-- Zona de Drop/Upload -->
-            <div id="dropzone" class="bg-white rounded-[2rem] shadow-sm border-2 border-dashed border-slate-200 p-12 text-center hover:border-blue-500 transition-all cursor-pointer relative group overflow-hidden">
-                <div class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-40 transition-opacity"></div>
+            <!-- Upload -->
+            <div id="dropzone" class="bg-white rounded-[2rem] border-2 border-dashed border-slate-200 p-12 text-center hover:border-blue-500 cursor-pointer relative group transition-all">
                 <input type="file" id="fileInput" multiple accept=".xml" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                
-                <div class="bg-slate-50 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">
-                    <i data-lucide="cloud-upload" class="h-10 w-10 text-slate-400 group-hover:text-blue-600"></i>
-                </div>
-                <h3 class="text-2xl font-extrabold text-slate-800">Importar ficheiros XML</h3>
-                <p class="text-slate-500 text-sm mt-3 max-w-sm mx-auto leading-relaxed">
-                    Arraste os ficheiros exportados do <strong>SARF</strong> para aqui ou clique para selecionar.
-                </p>
+                <i data-lucide="cloud-upload" class="h-10 w-10 text-slate-400 mx-auto mb-4 group-hover:text-blue-600 transition-all"></i>
+                <h3 class="text-2xl font-extrabold text-slate-800 tracking-tight">Importar ficheiros XML</h3>
+                <p class="text-slate-500 text-sm mt-2">Arraste os ficheiros exportados do <b>SARF</b> para aqui.</p>
             </div>
 
-            <!-- Fila de Ficheiros -->
-            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 flex flex-col min-h-[500px] overflow-hidden">
-                <div class="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-slate-900 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-md" id="fileCount">0</div>
-                        <h2 class="font-bold text-slate-800 text-lg">Ficheiros na fila</h2>
-                    </div>
+            <!-- Fila -->
+            <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 min-h-[300px] flex flex-col overflow-hidden">
+                <div class="px-8 py-6 border-b flex justify-between items-center bg-slate-50/50">
+                    <h2 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="list" class="w-4 h-4 text-blue-500"></i> Ficheiros na fila (<span id="fileCount">0</span>)</h2>
                     <div class="flex gap-4">
-                        <button id="clearBtn" class="hidden text-slate-400 hover:text-red-500 p-2.5 transition-colors" title="Limpar lista">
-                            <i data-lucide="eraser" class="w-6 h-6"></i>
-                        </button>
-                        <button id="processBtn" class="hidden bg-blue-600 hover:bg-blue-700 text-white px-10 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-200 active:translate-y-0.5">
-                            <i data-lucide="zap" class="w-4 h-4"></i> PROCESSAR E VALIDAR
-                        </button>
+                        <button id="clearBtn" class="hidden text-slate-400 hover:text-red-500 transition-colors"><i data-lucide="eraser"></i></button>
+                        <button id="processBtn" class="hidden bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl font-bold shadow-lg transition-all active:scale-95 uppercase text-xs">Corrigir e Validar</button>
                     </div>
                 </div>
-                
-                <div id="fileList" class="divide-y divide-slate-50 overflow-y-auto flex-1">
-                    <div class="h-full flex flex-col items-center justify-center text-slate-300 py-24">
-                        <i data-lucide="file-spreadsheet" class="w-16 h-16 mb-4 opacity-20"></i>
-                        <p class="text-sm italic font-medium">Aguardando importação de ficheiros...</p>
-                    </div>
+                <div id="fileList" class="flex-1 overflow-y-auto divide-y divide-slate-50"></div>
+            </div>
+
+            <!-- TABELA DE OMISSÕES COM DESTAQUE -->
+            <div id="screenReport" class="hidden bg-white rounded-[2rem] shadow-sm border border-amber-100 overflow-hidden">
+                <div class="bg-amber-50 px-8 py-5 border-b border-amber-100 flex items-center justify-between">
+                    <h3 class="font-bold text-amber-800 flex items-center gap-2 leading-none"><i data-lucide="alert-triangle" class="w-5 h-5"></i> Itens Removidos da Carga (Valores Negativos)</h3>
+                    <span class="text-[10px] bg-amber-200 text-amber-900 px-3 py-1 rounded-full font-extrabold uppercase tracking-widest" id="omissionsCount">0 itens</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-400 uppercase tracking-widest font-bold border-b border-slate-100">
+                                <th class="px-8 py-4">Informações do Documento (SARF)</th>
+                                <th class="px-8 py-4">Valor Removido</th>
+                                <th class="px-8 py-4">Arquivo de Origem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="omissionsBody" class="divide-y divide-slate-100 text-slate-600"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- Painel de Controlo (Direita) -->
-        <div class="lg:col-span-4 space-y-8">
-
-            <!-- Relatório de Omissões (Dinâmico) -->
-            <div id="reportContainer" class="hidden bg-amber-50 rounded-[2rem] p-8 border border-amber-200 shadow-lg shadow-amber-900/5 animate-bounce-short">
-                <h3 class="font-bold text-amber-800 flex items-center gap-2 mb-4">
-                    <i data-lucide="clipboard-list" class="w-5 h-5"></i> Relatório de Omissões
-                </h3>
-                <p class="text-xs text-amber-700 mb-6 leading-relaxed">
-                    Existem itens com valores negativos que foram removidos. Clique abaixo para baixar o relatório detalhado.
-                </p>
-                <button id="downloadReportBtn" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all">
-                    <i data-lucide="download" class="w-4 h-4"></i> DESCARREGAR RELATÓRIO (.TXT)
+        <!-- Painel Lateral -->
+        <div class="lg:col-span-4 space-y-6">
+            <div id="reportContainer" class="hidden bg-red-600 rounded-[2rem] p-6 text-white shadow-xl shadow-red-600/20 animate-pulse">
+                <h3 class="font-bold flex items-center gap-2 mb-2"><i data-lucide="clipboard-list"></i> Relatório de Omissões</h3>
+                <p class="text-[11px] opacity-90 mb-4">Itens negativos detetados. Baixe o log para conferência oficial.</p>
+                <button id="downloadReportBtn" class="w-full bg-white text-red-600 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-red-50 transition-all uppercase tracking-widest">
+                    <i data-lucide="download" class="w-4 h-4"></i> Baixar Log (.txt)
                 </button>
             </div>
 
-            <!-- Parâmetros de Data -->
             <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-6">
-                    <i data-lucide="calendar-days" class="w-5 h-5 text-blue-600"></i> Parâmetros de Data
-                </h3>
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Vencimento Geral / Pagto</label>
-                        <input type="date" id="dataGeral" value="2026-05-29" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Vencimento Dedução</label>
-                        <input type="date" id="dataDeducao" value="2026-06-19" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-2">Pagamento Dedução</label>
-                        <input type="date" id="dataDeducaoPagto" value="2026-06-19" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Consola de Atividade -->
-            <div class="bg-[#0f172a] rounded-[2rem] shadow-2xl p-8 text-white h-[300px] flex flex-col border border-slate-800">
-                <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-6 flex items-center justify-between">
-                    <span>Monitor de Operação</span>
-                    <i data-lucide="terminal" class="w-4 h-4"></i>
-                </h2>
-                <div id="logArea" class="flex-1 overflow-y-auto font-mono text-[11px] space-y-3 pr-2 text-emerald-400">
-                    <p class="text-slate-600 italic">Pronto para processamento.</p>
+                <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="calendar"></i> Parâmetros</h3>
+                <div class="space-y-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <label>Vencimento Geral / Pagto<input type="date" id="dataGeral" value="2026-05-29" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
+                    <label>Vencimento Dedução<input type="date" id="dataDeducao" value="2026-06-19" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
+                    <label>Pagamento Dedução<input type="date" id="dataDeducaoPagto" value="2026-06-19" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal Tutorial -->
+    <!-- Modal Tutorial SARF -->
     <div id="tutorialModal" class="modal fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 items-center justify-center p-6">
-        <div class="bg-white rounded-[2.5rem] max-w-3xl w-full shadow-2xl overflow-hidden relative max-h-[90vh] flex flex-col">
-            <div class="bg-blue-600 p-8 text-white flex justify-between items-center shrink-0">
-                <div class="flex items-center gap-4">
-                    <div class="bg-white/20 p-3 rounded-2xl text-white">
-                        <i data-lucide="book-open" class="w-8 h-8"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold italic">Tutorial SARF</h2>
-                        <p class="text-blue-100 text-[10px] uppercase tracking-[0.2em] font-bold mt-1">Como gerar o ficheiro XML de carga</p>
-                    </div>
+        <div class="bg-white rounded-[2rem] max-w-xl w-full p-10 shadow-2xl overflow-hidden relative">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3 italic text-blue-600"><i data-lucide="help-circle"></i> Tutorial SARF</h2>
+            <div class="space-y-6 text-sm text-slate-600">
+                <div class="flex gap-4">
+                    <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center shrink-0 font-bold">1</span>
+                    <p>No SARF acesse: <b>Finanças > Ordens Bancárias > Solicitações de Pagamento</b>.</p>
                 </div>
-                <button onclick="toggleModal('tutorialModal')" class="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            
-            <div class="p-8 space-y-6 overflow-y-auto flex-1">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">1</span>
-                            <h4 class="font-bold text-slate-800 text-sm">Aceder ao Menu</h4>
-                        </div>
-                        <p class="text-slate-500 text-xs leading-relaxed">No SARF, aceda a:<br><strong>Finanças > Ordens Bancárias > Solicitações de Pagamento</strong></p>
-                    </div>
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">2</span>
-                            <h4 class="font-bold text-slate-800 text-sm">Informar Data</h4>
-                        </div>
-                        <p class="text-slate-500 text-xs leading-relaxed">Digite a data da solicitação de pagamento no campo correspondente.</p>
-                    </div>
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">3</span>
-                            <h4 class="font-bold text-slate-800 text-sm">Filtro Sequencial</h4>
-                        </div>
-                        <p class="text-slate-500 text-xs leading-relaxed">Digite os <strong>4 últimos números</strong> do sequencial que aparece na primeira linha.</p>
-                    </div>
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">4</span>
-                            <h4 class="font-bold text-slate-800 text-sm">Seleção e XML</h4>
-                        </div>
-                        <p class="text-slate-500 text-xs leading-relaxed">Selecione as linhas desejadas e clique no botão <strong>XML/SIAFI</strong>.</p>
-                    </div>
+                <div class="flex gap-4">
+                    <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center shrink-0 font-bold">2</span>
+                    <p>Digite a <b class="text-red-500 uppercase">Data da solicitação</b> de pagamento[cite: 1].</p>
                 </div>
-                <button onclick="toggleModal('tutorialModal')" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-lg text-sm uppercase tracking-widest">Entendido, ir para a carga</button>
+                <div class="flex gap-4">
+                    <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center shrink-0 font-bold">3</span>
+                    <p>Digite os <b class="text-red-500 uppercase">4 últimos números</b> do <b class="text-red-500">SEQUENCIAL</b> que aparece na primeira linha[cite: 1].</p>
+                </div>
+                <div class="flex gap-4">
+                    <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center shrink-0 font-bold">4</span>
+                    <p>Selecione as linhas desejadas e clique no botão <b>XML/SIAFI</b>[cite: 1].</p>
+                </div>
             </div>
+            <button onclick="toggleModal('tutorialModal')" class="w-full mt-10 bg-slate-900 text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-black transition-all">Fechar Tutorial</button>
         </div>
     </div>
 
-    <footer class="bg-white border-t border-slate-100 p-8">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest gap-4 text-center md:text-left">
-            <p>© 2026 Carga de dados corrigida | Processamento Local Seguro</p>
-            <div class="flex gap-6">
-                <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Otimização Instantânea</span>
-                <span class="flex items-center gap-1.5"><i data-lucide="file-check" class="w-3.5 h-3.5 text-blue-500"></i> Layout DH001</span>
-            </div>
-        </div>
-    </footer>
-
     <script>
         lucide.createIcons();
+        const fileInput = document.getElementById('fileInput'), fileList = document.getElementById('fileList'), fileCountLabel = document.getElementById('fileCount'), processBtn = document.getElementById('processBtn'), clearBtn = document.getElementById('clearBtn'), reportContainer = document.getElementById('reportContainer'), downloadReportBtn = document.getElementById('downloadReportBtn');
+        const screenReport = document.getElementById('screenReport'), omissionsBody = document.getElementById('omissionsBody'), omissionsCount = document.getElementById('omissionsCount');
+        let queue = [], globalRemovalLogs = [];
 
-        const fileInput = document.getElementById('fileInput');
-        const fileList = document.getElementById('fileList');
-        const fileCountLabel = document.getElementById('fileCount');
-        const processBtn = document.getElementById('processBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const logArea = document.getElementById('logArea');
-        const dropzone = document.getElementById('dropzone');
-        const reportContainer = document.getElementById('reportContainer');
-        const downloadReportBtn = document.getElementById('downloadReportBtn');
-
-        let queue = [];
-        let globalRemovalLogs = [];
-
-        function toggleModal(id) {
-            document.getElementById(id).classList.toggle('open');
-        }
-
-        function addLog(msg, type = 'info') {
-            const time = new Date().toLocaleTimeString();
-            let color = 'text-slate-400';
-            if(type === 'error') color = 'text-red-400';
-            if(type === 'success') color = 'text-emerald-400';
-            
-            const div = document.createElement('div');
-            div.className = `border-l-2 pl-4 py-1 border-slate-800 ${color}`;
-            div.innerHTML = `<span class="text-slate-600 mr-2 text-[9px] font-sans tracking-widest">${time}</span> ${msg}`;
-            logArea.prepend(div);
-        }
+        function toggleModal(id) { document.getElementById(id).classList.toggle('open'); }
 
         fileInput.addEventListener('change', (e) => {
             const files = Array.from(e.target.files).filter(f => f.name.toLowerCase().endsWith('.xml'));
-            if (files.length === 0) return;
-            files.forEach(f => {
-                const id = Math.random().toString(36).substr(2, 9);
-                queue.push({ id, file: f, status: 'pendente', result: null });
-            });
+            files.forEach(f => queue.push({ id: Math.random().toString(36).substr(2, 9), file: f, status: 'pendente', result: null }));
             updateUI();
-            addLog(`${files.length} ficheiro(s) carregado(s).`);
         });
 
-        clearBtn.onclick = () => {
-            queue = [];
-            globalRemovalLogs = [];
-            reportContainer.classList.add('hidden');
-            updateUI();
-            addLog("Fila limpa.");
-        };
+        clearBtn.onclick = () => { queue = []; globalRemovalLogs = []; reportContainer.classList.add('hidden'); screenReport.classList.add('hidden'); updateUI(); };
 
         function updateUI() {
             fileCountLabel.innerText = queue.length;
-            if (queue.length > 0) {
-                processBtn.classList.remove('hidden');
-                clearBtn.classList.remove('hidden');
-                fileList.innerHTML = '';
-                queue.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = "px-8 py-6 flex items-center justify-between hover:bg-slate-50/50 transition-all " + 
-                                   (item.status === 'concluído' ? 'bg-emerald-50/10' : '');
-                    div.innerHTML = `
-                        <div class="flex items-center gap-6">
-                            <div class="p-3.5 rounded-2xl ${item.status === 'concluído' ? 'bg-emerald-100 text-emerald-600 shadow-sm' : 'bg-slate-100 text-slate-400'}">
-                                <i data-lucide="${item.status === 'concluído' ? 'check-circle' : 'file-code'}" class="w-6 h-6"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-slate-700 truncate max-w-[300px] text-sm">${item.file.name}</p>
-                                <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest mt-1">${item.status}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            ${item.status === 'concluído' ? 
-                                `<button onclick="downloadFile('${item.id}')" class="bg-blue-600 text-white p-3.5 rounded-2xl hover:bg-blue-700 transition-all active:scale-90" title="Descarregar XML"><i data-lucide="download" class="w-5 h-5"></i></button>` : 
-                                `<button onclick="removeFile('${item.id}')" class="p-3.5 text-slate-300 hover:text-red-500 rounded-2xl transition-all"><i data-lucide="trash-2" class="w-5 h-5"></i></button>`}
-                        </div>
-                    `;
-                    fileList.appendChild(div);
-                });
-                lucide.createIcons();
-            } else {
-                processBtn.classList.add('hidden');
-                clearBtn.classList.add('hidden');
-                fileList.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-slate-300 py-24"><i data-lucide="file-spreadsheet" class="w-16 h-16 mb-4 opacity-20"></i><p class="text-sm italic font-medium">Aguardando documentos do SARF...</p></div>`;
-                lucide.createIcons();
-            }
+            processBtn.classList.toggle('hidden', queue.length === 0);
+            clearBtn.classList.toggle('hidden', queue.length === 0);
+            fileList.innerHTML = queue.map(item => `
+                <div class="p-6 flex justify-between items-center transition-all ${item.status === 'concluído' ? 'bg-emerald-50/30 border-l-4 border-emerald-500' : ''}">
+                    <div><p class="font-bold text-sm text-slate-700 tracking-tight">${item.file.name}</p><p class="text-[10px] uppercase font-bold tracking-widest text-slate-400 mt-1">${item.status}</p></div>
+                    ${item.status === 'concluído' ? `<button onclick="downloadFile('${item.id}')" class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md shadow-blue-600/20 hover:bg-blue-700"><i data-lucide="download" class="w-5 h-5"></i></button>` : `<button onclick="removeFile('${item.id}')" class="text-slate-300 hover:text-red-400 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>`}
+                </div>
+            `).join('');
+            lucide.createIcons();
         }
 
-        function removeFile(id) {
-            queue = queue.filter(q => q.id !== id);
-            updateUI();
+        function removeFile(id) { queue = queue.filter(q => q.id !== id); updateUI(); }
+
+        // Função para formatar o sequencial em vermelho e negrito
+        function highlightSequencial(text) {
+            // Regex para capturar números sequenciais (ex: 20260012) - ajuste conforme o padrão do SARF
+            return text.replace(/(\d{8,10})/g, '<span class="highlight-seq">$1</span>');
         }
 
         async function processFile(item) {
-            const dataGeralVal = document.getElementById('dataGeral').value;
-            const dataDeducaoVal = document.getElementById('dataDeducao').value;
-            const dataDeducaoPagtoVal = document.getElementById('dataDeducaoPagto').value;
-
-            return new Promise((resolve) => {
+            const dG = document.getElementById('dataGeral').value, dD = document.getElementById('dataDeducao').value, dDP = document.getElementById('dataDeducaoPagto').value;
+            return new Promise(resolve => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    try {
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
-                        
-                        let removidosNoFicheiro = 0;
-                        const detalhes = Array.from(xmlDoc.getElementsByTagName("sb:detalhe")).length > 0 ? 
-                                         Array.from(xmlDoc.getElementsByTagName("sb:detalhe")) : 
-                                         Array.from(xmlDoc.getElementsByTagName("detalhe"));
-                        
-                        const container = xmlDoc.getElementsByTagName("sb:detalhes")[0] || xmlDoc.getElementsByTagName("detalhes")[0];
+                    const parser = new DOMParser(), xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+                    let removidos = 0;
+                    const detalhes = Array.from(xmlDoc.getElementsByTagName("sb:detalhe")).length > 0 ? Array.from(xmlDoc.getElementsByTagName("sb:detalhe")) : Array.from(xmlDoc.getElementsByTagName("detalhe"));
+                    const container = xmlDoc.getElementsByTagName("sb:detalhes")[0] || xmlDoc.getElementsByTagName("detalhes")[0];
 
-                        detalhes.forEach(detalhe => {
-                            const valores = Array.from(detalhe.getElementsByTagName("vlr"));
-                            const temNegativo = valores.some(v => parseFloat(v.textContent) < 0);
-
-                            if (temNegativo) {
-                                // Capturar dados para o relatório de omissões
-                                const dadosBasicos = detalhe.getElementsByTagName("dadosBasicos")[0];
-                                const dh = detalhe.getElementsByTagName("doc:CprDhCadastrar")[0] || detalhe.getElementsByTagName("CprDhCadastrar")[0];
-                                
-                                let obs = "Sem observação";
-                                let valorNeg = "N/D";
-
-                                if (dadosBasicos) {
-                                    const obsEl = dadosBasicos.getElementsByTagName("txtObser")[0];
-                                    if (obsEl) obs = obsEl.textContent.trim();
-                                    const vlrEl = dadosBasicos.getElementsByTagName("vlr")[0];
-                                    if (vlrEl) valorNeg = vlrEl.textContent.trim();
-                                }
-
-                                globalRemovalLogs.push(`Ficheiro: ${item.file.name} | Obs: ${obs} | Valor Removido: ${valorNeg}`);
-                                
-                                if (container) container.removeChild(detalhe);
-                                removidosNoFicheiro++;
-                                return;
-                            }
-
-                            const dados = detalhe.getElementsByTagName("dadosBasicos")[0];
+                    detalhes.forEach(det => {
+                        const vlrNeg = Array.from(det.getElementsByTagName("vlr")).some(v => parseFloat(v.textContent) < 0);
+                        if (vlrNeg) {
+                            const obs = det.getElementsByTagName("txtObser")[0]?.textContent || "S/ Obs";
+                            const val = det.getElementsByTagName("vlr")[0]?.textContent || "0,00";
+                            globalRemovalLogs.push({ obs, val, file: item.file.name });
+                            if (container) container.removeChild(det);
+                            removidos++;
+                        } else {
+                            const dados = det.getElementsByTagName("dadosBasicos")[0];
                             if (dados) {
-                                // 1. CNPJ na Observação
-                                const obsEl = dados.getElementsByTagName("txtObser")[0];
-                                const credorEl = dados.getElementsByTagName("codCredorDevedor")[0];
-                                if (obsEl && credorEl) {
-                                    const cnpj = credorEl.textContent.trim();
-                                    const obsOriginal = obsEl.textContent.trim();
-                                    if (!obsOriginal.includes(cnpj)) {
-                                        obsEl.textContent = `${obsOriginal} | Fornecedor: ${cnpj}`;
-                                    }
-                                }
-
-                                // 2. Datas Gerais
-                                ["dtVenc", "dtPgtoReceb"].forEach(t => {
-                                    const el = dados.getElementsByTagName(t)[0];
-                                    if (el) el.textContent = dataGeralVal;
-                                });
-                                // UG fixa conforme pedido original
-                                const ug = dados.getElementsByTagName("codUgPgto")[0];
-                                if (ug) ug.textContent = "155913";
+                                const cnpj = det.getElementsByTagName("codCredorDevedor")[0]?.textContent || "";
+                                const obsEl = det.getElementsByTagName("txtObser")[0];
+                                if (obsEl && cnpj && !obsEl.textContent.includes(cnpj)) obsEl.textContent = obsEl.textContent + " | Fornecedor: " + cnpj;
+                                Array.from(dados.querySelectorAll("dtVenc, dtPgtoReceb")).forEach(el => el.textContent = dG);
+                                const ug = dados.getElementsByTagName("codUgPgto")[0]; if (ug) ug.textContent = "155913";
                             }
-
-                            // 3. Deduções
-                            const deducoes = Array.from(detalhe.getElementsByTagName("deducao"));
-                            deducoes.forEach(ded => {
-                                const map = {
-                                    "codSit": "DDF055", 
-                                    "dtVenc": dataDeducaoVal, 
-                                    "dtPgtoReceb": dataDeducaoPagtoVal, 
-                                    "codUgPgto": "155913"
-                                };
-                                Object.entries(map).forEach(([t, v]) => {
-                                    const el = ded.getElementsByTagName(t)[0];
-                                    if (el) el.textContent = v;
-                                });
+                            Array.from(det.getElementsByTagName("deducao")).forEach(ded => {
+                                const map = {"codSit": "DDF055", "dtVenc": dD, "dtPgtoReceb": dDP, "codUgPgto": "155913"};
+                                Object.entries(map).forEach(([t, v]) => { const el = ded.getElementsByTagName(t)[0]; if (el) el.textContent = v; });
                                 Array.from(ded.getElementsByTagName("predoc")).forEach(p => ded.removeChild(p));
                             });
-                        });
-
-                        // 4. Atualizar Trailler (quantidade de detalhes)
-                        const trailler = xmlDoc.getElementsByTagName("sb:trailler")[0] || xmlDoc.getElementsByTagName("trailler")[0];
-                        if (trailler) {
-                            const qtd = trailler.getElementsByTagName("sb:quantidadeDetalhe")[0] || trailler.getElementsByTagName("quantidadeDetalhe")[0];
-                            if (qtd && container) qtd.textContent = container.children.length.toString();
                         }
-
-                        const serializer = new XMLSerializer();
-                        resolve({ success: true, content: serializer.serializeToString(xmlDoc), removidos: removidosNoFicheiro });
-                    } catch (err) {
-                        resolve({ success: false, error: err.message });
-                    }
+                    });
+                    const tr = xmlDoc.getElementsByTagName("sb:trailler")[0] || xmlDoc.getElementsByTagName("trailler")[0];
+                    if (tr) { const q = tr.getElementsByTagName("sb:quantidadeDetalhe")[0] || tr.getElementsByTagName("quantidadeDetalhe")[0]; if(q) q.textContent = container.children.length; }
+                    resolve({ success: true, content: new XMLSerializer().serializeToString(xmlDoc), removidos });
                 };
                 reader.readAsText(item.file, "ISO-8859-1");
             });
         }
 
-        processBtn.addEventListener('click', async () => {
-            processBtn.disabled = true;
-            processBtn.innerText = "A PROCESSAR...";
-            globalRemovalLogs = []; // Limpar logs anteriores
-            reportContainer.classList.add('hidden');
-            addLog("Iniciando otimização em lote...");
-
-            for (let item of queue) {
-                if (item.status === 'concluído') continue;
-                const res = await processFile(item);
-                if (res.success) {
-                    item.status = 'concluído';
-                    item.result = res;
-                    addLog(`✔ ${item.file.name}: ${res.removidos} removidos + CNPJ incluído.`, 'success');
-                } else {
-                    item.status = 'erro';
-                    addLog(`❌ ${item.file.name}: Falha na leitura.`, 'error');
-                }
-            }
-            
+        processBtn.onclick = async () => {
+            globalRemovalLogs = [];
+            for (let item of queue) { if (item.status === 'pendente') { const res = await processFile(item); item.status = 'concluído'; item.result = res; } }
             updateUI();
-            processBtn.disabled = false;
-            processBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> CORRIGIR E VALIDAR';
-            addLog("Processamento concluído.");
-
-            // Mostrar botão de relatório se houver omissões
             if (globalRemovalLogs.length > 0) {
                 reportContainer.classList.remove('hidden');
-                lucide.createIcons();
+                screenReport.classList.remove('hidden');
+                omissionsCount.innerText = `${globalRemovalLogs.length} itens`;
+                omissionsBody.innerHTML = globalRemovalLogs.map(log => `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-8 py-5 font-medium text-slate-700 leading-snug">${highlightSequencial(log.obs)}</td>
+                        <td class="px-8 py-5 text-red-600 font-extrabold text-sm tabular-nums tracking-tighter">R$ ${log.val}</td>
+                        <td class="px-8 py-5 text-slate-400 italic text-[10px]">${log.file}</td>
+                    </tr>
+                `).join('');
             }
-        });
+        };
 
         downloadReportBtn.onclick = () => {
-            if (globalRemovalLogs.length === 0) return;
-            const header = `RELATÓRIO DE OMISSÕES - CARGA SIAFI\nData: ${new Date().toLocaleString()}\n${'-'.repeat(50)}\n\n`;
-            const content = header + globalRemovalLogs.join('\n');
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `log_removidos_${new Date().toISOString().slice(0,10)}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
+            const text = "RELATÓRIO DE OMISSÕES - CARGA CORRIGIDA\n" + "=".repeat(50) + "\n" + globalRemovalLogs.map(l => `Obs: ${l.obs} | Valor: ${l.val} | Arquivo: ${l.file}`).join('\n');
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'omissoes_carga.txt'; a.click();
         };
 
         window.downloadFile = (id) => {
             const item = queue.find(q => q.id === id);
-            if (!item || !item.result) return;
             const blob = new Blob([item.result.content], { type: 'text/xml' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = item.file.name.replace(".xml", "_corrigida.xml");
-            a.click();
-            URL.revokeObjectURL(url);
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = item.file.name.replace(".xml", "_corrigida.xml"); a.click();
         };
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => dropzone.classList.add('active'), false);
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => dropzone.classList.remove('active'), false);
-        });
     </script>
 </body>
 </html>
