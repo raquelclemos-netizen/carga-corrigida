@@ -121,24 +121,21 @@
     </div>
 
     <script>
-        // Inicialização automática de datas ao carregar a página
         window.onload = () => {
             lucide.createIcons();
             
             const hoje = new Date();
             
-            // 1. Sugestão de Data de Apuração: Terça-feira da semana seguinte
-            // Descobre quantos dias faltam para o próximo domingo e soma 2 (Terça)
+            // Sugestão de Data de Apuração: Terça-feira da semana seguinte
             const diasParaDomingo = 7 - hoje.getDay();
             const proximaTerca = new Date(hoje);
-            proximaTerca.setDate(hoje.getDate() + diasParaDomingo + 2);
+            proximaTerca.setDate(hoje.getDate() + (hoje.getDay() <= 2 ? (2 - hoje.getDay()) : (7 - hoje.getDay() + 2)));
             
-            // Formata para YYYY-MM-DD para o input type="date"
+            if (proximaTerca <= hoje) proximaTerca.setDate(proximaTerca.getDate() + 7);
+
             const dataFormatada = proximaTerca.toISOString().split('T')[0];
             document.getElementById('dataApuracao').value = dataFormatada;
 
-            // Opcional: Definir data geral como hoje ou manter um padrão (ex: 29/05/2026 como estava)
-            // Se preferir dinâmico, pode usar hoje.toISOString().split('T')[0]
             document.getElementById('dataGeral').value = "2026-05-29";
             document.getElementById('dataDeducao').value = "2026-06-19";
             document.getElementById('dataDeducaoPagto').value = "2026-06-19";
@@ -213,6 +210,12 @@
                                 Array.from(ded.getElementsByTagName("predoc")).forEach(p => {
                                     const dtApurEl = p.getElementsByTagName("dtPrdoApuracao")[0];
                                     if (dtApurEl) dtApurEl.textContent = dApur;
+                                    
+                                    // AJUSTE: Removemos a tag vinculação do XML pois o campo foi excluído da tela
+                                    const vincEl = p.getElementsByTagName("vinculacao")[0];
+                                    if (vincEl) {
+                                        vincEl.remove();
+                                    }
                                 });
                             });
                         }
