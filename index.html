@@ -31,6 +31,7 @@
 
     <main class="max-w-7xl mx-auto p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 w-full">
         <div class="lg:col-span-8 space-y-8">
+            <!-- Upload -->
             <div id="dropzone" class="bg-white rounded-[2rem] border-2 border-dashed border-slate-200 p-12 text-center hover:border-blue-500 cursor-pointer relative group transition-all">
                 <input type="file" id="fileInput" multiple accept=".xml" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                 <i data-lucide="cloud-upload" class="h-10 w-10 text-slate-400 mx-auto mb-4 group-hover:text-blue-600 transition-all"></i>
@@ -38,6 +39,7 @@
                 <p class="text-slate-500 text-sm mt-2">Arraste os ficheiros exportados do <b>SARF</b> para aqui.</p>
             </div>
 
+            <!-- Fila -->
             <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 min-h-[300px] flex flex-col overflow-hidden">
                 <div class="px-8 py-6 border-b flex justify-between items-center bg-slate-50/50">
                     <h2 class="font-bold text-slate-800 flex items-center gap-2"><i data-lucide="list" class="w-4 h-4 text-blue-500"></i> Ficheiros na fila (<span id="fileCount">0</span>)</h2>
@@ -49,6 +51,7 @@
                 <div id="fileList" class="flex-1 overflow-y-auto divide-y divide-slate-50"></div>
             </div>
 
+            <!-- TABELA DE OMISSÕES -->
             <div id="screenReport" class="hidden bg-white rounded-[2rem] shadow-sm border border-amber-100 overflow-hidden">
                 <div class="bg-amber-50 px-8 py-5 border-b border-amber-100 flex items-center justify-between">
                     <h3 class="font-bold text-amber-800 flex items-center gap-2 leading-none"><i data-lucide="alert-triangle" class="w-5 h-5"></i> Itens Removidos da Carga (Valores Negativos)</h3>
@@ -69,6 +72,7 @@
             </div>
         </div>
 
+        <!-- Painel Lateral -->
         <div class="lg:col-span-4 space-y-6">
             <div id="reportContainer" class="hidden bg-red-600 rounded-[2rem] p-6 text-white shadow-xl shadow-red-600/20 animate-pulse">
                 <h3 class="font-bold flex items-center gap-2 mb-2"><i data-lucide="clipboard-list"></i> Relatório de Omissões</h3>
@@ -81,23 +85,16 @@
             <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
                 <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="calendar"></i> Parâmetros</h3>
                 <div class="space-y-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    <label>Vencimento Geral / Pagto
-                        <input type="date" id="dataGeral" value="2026-05-29" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all">
-                    </label>
-                    <label>Vencimento Dedução
-                        <input type="date" id="dataDeducao" value="2026-06-19" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all">
-                    </label>
-                    <label>Pagamento Dedução
-                        <input type="date" id="dataDeducaoPagto" value="2026-06-19" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all">
-                    </label>
-                    <label>Data Apuração (DARF)
-                        <input type="date" id="dataApuracao" value="2026-05-31" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all">
-                    </label>
+                    <label>Vencimento Geral / Pagto<input type="date" id="dataGeral" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
+                    <label>Vencimento Dedução<input type="date" id="dataDeducao" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
+                    <label>Pagamento Dedução<input type="date" id="dataDeducaoPagto" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
+                    <label>Data Apuração (DARF)<input type="date" id="dataApuracao" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Modal Tutorial SARF -->
     <div id="tutorialModal" class="modal fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 items-center justify-center p-6">
         <div class="bg-white rounded-[2rem] max-w-xl w-full p-10 shadow-2xl overflow-hidden relative">
             <h2 class="text-2xl font-bold mb-6 flex items-center gap-3 italic text-blue-600"><i data-lucide="help-circle"></i> Tutorial SARF</h2>
@@ -124,7 +121,29 @@
     </div>
 
     <script>
-        lucide.createIcons();
+        // Inicialização automática de datas ao carregar a página
+        window.onload = () => {
+            lucide.createIcons();
+            
+            const hoje = new Date();
+            
+            // 1. Sugestão de Data de Apuração: Terça-feira da semana seguinte
+            // Descobre quantos dias faltam para o próximo domingo e soma 2 (Terça)
+            const diasParaDomingo = 7 - hoje.getDay();
+            const proximaTerca = new Date(hoje);
+            proximaTerca.setDate(hoje.getDate() + diasParaDomingo + 2);
+            
+            // Formata para YYYY-MM-DD para o input type="date"
+            const dataFormatada = proximaTerca.toISOString().split('T')[0];
+            document.getElementById('dataApuracao').value = dataFormatada;
+
+            // Opcional: Definir data geral como hoje ou manter um padrão (ex: 29/05/2026 como estava)
+            // Se preferir dinâmico, pode usar hoje.toISOString().split('T')[0]
+            document.getElementById('dataGeral').value = "2026-05-29";
+            document.getElementById('dataDeducao').value = "2026-06-19";
+            document.getElementById('dataDeducaoPagto').value = "2026-06-19";
+        };
+
         const fileInput = document.getElementById('fileInput'), fileList = document.getElementById('fileList'), fileCountLabel = document.getElementById('fileCount'), processBtn = document.getElementById('processBtn'), clearBtn = document.getElementById('clearBtn'), reportContainer = document.getElementById('reportContainer'), downloadReportBtn = document.getElementById('downloadReportBtn');
         const screenReport = document.getElementById('screenReport'), omissionsBody = document.getElementById('omissionsBody'), omissionsCount = document.getElementById('omissionsCount');
         let queue = [], globalRemovalLogs = [];
@@ -191,7 +210,6 @@
                                 const map = {"codSit": "DDF055", "dtVenc": dD, "dtPgtoReceb": dDP, "codUgPgto": "155913"};
                                 Object.entries(map).forEach(([t, v]) => { const el = ded.getElementsByTagName(t)[0]; if (el) el.textContent = v; });
                                 
-                                // AJUSTE: Atualiza a data de apuração dentro do predoc sem removê-lo
                                 Array.from(ded.getElementsByTagName("predoc")).forEach(p => {
                                     const dtApurEl = p.getElementsByTagName("dtPrdoApuracao")[0];
                                     if (dtApurEl) dtApurEl.textContent = dApur;
