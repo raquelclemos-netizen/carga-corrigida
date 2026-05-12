@@ -51,7 +51,7 @@
                 <div id="fileList" class="flex-1 overflow-y-auto divide-y divide-slate-50"></div>
             </div>
 
-            <!-- TABELA DE OMISSÕES -->
+            <!-- TABELA DE OMISSÕES COM DESTAQUE -->
             <div id="screenReport" class="hidden bg-white rounded-[2rem] shadow-sm border border-amber-100 overflow-hidden">
                 <div class="bg-amber-50 px-8 py-5 border-b border-amber-100 flex items-center justify-between">
                     <h3 class="font-bold text-amber-800 flex items-center gap-2 leading-none"><i data-lucide="alert-triangle" class="w-5 h-5"></i> Itens Removidos da Carga (Valores Negativos)</h3>
@@ -85,10 +85,9 @@
             <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
                 <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="calendar"></i> Parâmetros</h3>
                 <div class="space-y-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    <label>Vencimento Geral / Pagto<input type="date" id="dataGeral" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
-                    <label>Vencimento Dedução<input type="date" id="dataDeducao" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
-                    <label>Pagamento Dedução<input type="date" id="dataDeducaoPagto" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
-                    <label>Data Apuração (DARF)<input type="date" id="dataApuracao" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
+                    <label>Vencimento Geral / Pagto<input type="date" id="dataGeral" value="2026-05-29" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
+                    <label>Vencimento Dedução<input type="date" id="dataDeducao" value="2026-06-19" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
+                    <label>Pagamento Dedução<input type="date" id="dataDeducaoPagto" value="2026-06-19" class="w-full mt-2 bg-slate-50 p-3 rounded-xl text-slate-900 border border-slate-100 focus:ring-2 focus:ring-blue-500/10 focus:outline-none focus:border-blue-500 transition-all"></label>
                 </div>
             </div>
         </div>
@@ -105,15 +104,15 @@
                 </div>
                 <div class="flex gap-4">
                     <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center shrink-0 font-bold">2</span>
-                    <p>Digite a <b class="text-red-500 uppercase">Data da solicitação</b> de pagamento.</p>
+                    <p>Digite a <b class="text-red-500 uppercase">Data da solicitação</b> de pagamento[cite: 1].</p>
                 </div>
                 <div class="flex gap-4">
                     <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center shrink-0 font-bold">3</span>
-                    <p>Digite os <b class="text-red-500 uppercase">4 últimos números</b> do <b class="text-red-500">SEQUENCIAL</b>.</p>
+                    <p>Digite os <b class="text-red-500 uppercase">4 últimos números</b> do <b class="text-red-500">SEQUENCIAL</b> que aparece na primeira linha[cite: 1].</p>
                 </div>
                 <div class="flex gap-4">
                     <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded flex items-center justify-center shrink-0 font-bold">4</span>
-                    <p>Selecione as linhas desejadas e clique no botão <b>XML/SIAFI</b>.</p>
+                    <p>Selecione as linhas desejadas e clique no botão <b>XML/SIAFI</b>[cite: 1].</p>
                 </div>
             </div>
             <button onclick="toggleModal('tutorialModal')" class="w-full mt-10 bg-slate-900 text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-black transition-all">Fechar Tutorial</button>
@@ -121,26 +120,7 @@
     </div>
 
     <script>
-        window.onload = () => {
-            lucide.createIcons();
-            
-            const hoje = new Date();
-            
-            // Sugestão de Data de Apuração: Terça-feira da semana seguinte
-            const diasParaDomingo = 7 - hoje.getDay();
-            const proximaTerca = new Date(hoje);
-            proximaTerca.setDate(hoje.getDate() + (hoje.getDay() <= 2 ? (2 - hoje.getDay()) : (7 - hoje.getDay() + 2)));
-            
-            if (proximaTerca <= hoje) proximaTerca.setDate(proximaTerca.getDate() + 7);
-
-            const dataFormatada = proximaTerca.toISOString().split('T')[0];
-            document.getElementById('dataApuracao').value = dataFormatada;
-
-            document.getElementById('dataGeral').value = "2026-05-29";
-            document.getElementById('dataDeducao').value = "2026-06-19";
-            document.getElementById('dataDeducaoPagto').value = "2026-06-19";
-        };
-
+        lucide.createIcons();
         const fileInput = document.getElementById('fileInput'), fileList = document.getElementById('fileList'), fileCountLabel = document.getElementById('fileCount'), processBtn = document.getElementById('processBtn'), clearBtn = document.getElementById('clearBtn'), reportContainer = document.getElementById('reportContainer'), downloadReportBtn = document.getElementById('downloadReportBtn');
         const screenReport = document.getElementById('screenReport'), omissionsBody = document.getElementById('omissionsBody'), omissionsCount = document.getElementById('omissionsCount');
         let queue = [], globalRemovalLogs = [];
@@ -170,14 +150,14 @@
 
         function removeFile(id) { queue = queue.filter(q => q.id !== id); updateUI(); }
 
-        function highlightSequencial(text) { return text.replace(/(\d{8,10})/g, '<span class="highlight-seq">$1</span>'); }
+        // Função para formatar o sequencial em vermelho e negrito
+        function highlightSequencial(text) {
+            // Regex para capturar números sequenciais (ex: 20260012) - ajuste conforme o padrão do SARF
+            return text.replace(/(\d{8,10})/g, '<span class="highlight-seq">$1</span>');
+        }
 
         async function processFile(item) {
-            const dG = document.getElementById('dataGeral').value, 
-                  dD = document.getElementById('dataDeducao').value, 
-                  dDP = document.getElementById('dataDeducaoPagto').value,
-                  dApur = document.getElementById('dataApuracao').value;
-
+            const dG = document.getElementById('dataGeral').value, dD = document.getElementById('dataDeducao').value, dDP = document.getElementById('dataDeducaoPagto').value;
             return new Promise(resolve => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -206,17 +186,7 @@
                             Array.from(det.getElementsByTagName("deducao")).forEach(ded => {
                                 const map = {"codSit": "DDF055", "dtVenc": dD, "dtPgtoReceb": dDP, "codUgPgto": "155913"};
                                 Object.entries(map).forEach(([t, v]) => { const el = ded.getElementsByTagName(t)[0]; if (el) el.textContent = v; });
-                                
-                                Array.from(ded.getElementsByTagName("predoc")).forEach(p => {
-                                    const dtApurEl = p.getElementsByTagName("dtPrdoApuracao")[0];
-                                    if (dtApurEl) dtApurEl.textContent = dApur;
-                                    
-                                    // AJUSTE: Removemos a tag vinculação do XML pois o campo foi excluído da tela
-                                    const vincEl = p.getElementsByTagName("vinculacao")[0];
-                                    if (vincEl) {
-                                        vincEl.remove();
-                                    }
-                                });
+                                Array.from(ded.getElementsByTagName("predoc")).forEach(p => ded.removeChild(p));
                             });
                         }
                     });
